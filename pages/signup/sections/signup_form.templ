@@ -1,0 +1,87 @@
+package sections
+
+templ SignUpForm() {
+<div class="container">
+	<div class="row">
+		<h1 class="col">SignUp</h1>
+	</div>
+	<div class="row">
+	<form class="row g-3 needs-validation" action="/signup-validation" method="post" novalidate>
+		<!-- Email Field -->
+		<div class="col-12">
+			<label for="email" class="form-label">Employee Email address</label>
+			<input type="email" class="form-control" name="email" id="email" placeholder="Enter email" required>
+			<div class="invalid-feedback">
+				Please provide a valid email address.
+			</div>
+		</div>
+
+		<!-- Password Field -->
+		<div class="col-12">
+			<label for="password" class="form-label">Password</label>
+			<input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
+			<div class="invalid-feedback">
+				Please enter a password.
+			</div>
+		</div>
+
+		<!-- Repeated Password Field -->
+		<div class="col-12">
+			<label for="repeatedPassword" class="form-label">Repeat Password</label>
+			<input type="password" class="form-control" name="repeatedPassword" id="repeatedPassword" placeholder="Repeat Password" required>
+			<div class="invalid-feedback" id="passwordMatchFeedback">
+				Passwords must match.
+			</div>
+		</div>
+
+		<!-- Submit Button -->
+		<div class="col-12">
+			<button type="submit" class="btn btn-primary">Sign Up</button>
+		</div>
+	</form>
+	</div>
+</div>
+
+
+
+<!-- Validation Script -->
+<script>
+	(() => {
+		'use strict'
+
+		// Password matching validation
+		const password = document.getElementById('password')
+		const repeatedPassword = document.getElementById('repeatedPassword')
+		const passwordFeedback = document.getElementById('passwordMatchFeedback')
+		
+		function validatePassword() {
+			if (repeatedPassword.value !== password.value) {
+				repeatedPassword.setCustomValidity('Passwords do not match')
+				passwordFeedback.textContent = 'Passwords must match.'
+			} else {
+				repeatedPassword.setCustomValidity('')
+				passwordFeedback.textContent = 'Please repeat your password.'
+			}
+		}
+
+		password.addEventListener('input', validatePassword)
+		repeatedPassword.addEventListener('input', validatePassword)
+
+		// Bootstrap validation
+		const forms = document.querySelectorAll('.needs-validation')
+
+		Array.from(forms).forEach(form => {
+			form.addEventListener('submit', event => {
+				validatePassword() // Check passwords before submission
+				
+				if (!form.checkValidity()) {
+					event.preventDefault()
+					event.stopPropagation()
+				}
+
+				form.classList.add('was-validated')
+			}, false)
+		})
+	})()
+</script>
+}
