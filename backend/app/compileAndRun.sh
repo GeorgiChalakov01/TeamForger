@@ -1,3 +1,3 @@
 go tool templ generate ./...
-CGO_ENABLED=0 go build -o TeamForger .
+CGO_ENABLED=0 go build -o teamforger .
 go run .

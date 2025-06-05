@@ -1,4 +1,4 @@
 cd app
 ./compile.sh
 cd ..
-docker buildx build -t team-forger .
+docker buildx build -t teamforger .

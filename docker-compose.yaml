@@ -2,8 +2,8 @@ services:
   backend:
     image: team-forger
     environment:
-      - VIRTUAL_HOST="team-forger.gchalakov.com"
-      - LETSENCRYPT_HOST="team-forger.gchalakov.com"
+      - VIRTUAL_HOST="teamforger.gchalakov.com"
+      - LETSENCRYPT_HOST="teamforger.gchalakov.com"
     networks:
       - net
 
