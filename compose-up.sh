@@ -1,5 +1,5 @@
 cd backend
-./compile.sh
+./rebuild.sh
 cd ..
 
 docker compose up -d
