@@ -1,3 +1,4 @@
 go tool templ generate ./...
 CGO_ENABLED=0 go build -o teamforger .
-go run .
+cd ../../
+./recreateBackend.sh
