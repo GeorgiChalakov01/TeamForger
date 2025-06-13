@@ -11,15 +11,16 @@ import (
 func main() {
 	http.Handle("/", http.RedirectHandler("/signup", http.StatusSeeOther))
 	http.Handle("/signup", templ.Handler(signup.SignUp()))
-	http.HandleFunc("/signup-validation", func(w http.ResponseWriter, r *http.Request){
+	http.HandleFunc("/process-signup", func(w http.ResponseWriter, r *http.Request){
 		email := r.FormValue("email")
 		password := r.FormValue("password")
 		repeatedPassword := r.FormValue("repeatedPassword")
 
-		signup.ValidateForm(w, r, email, password, repeatedPassword)
+		ValidateForm(w, r, email, password, repeatedPassword)
 		// Create account
-		hashedPassword := signup.HashPassword(email, password)
-		signup.CreateAccount(email, hashedPassword)
+		hashedPassword := HashPassword(email, password)
+		conn, _ := Connect()
+		CreateAccount(conn, email, hashedPassword)
 	})
 
 	fmt.Println("Listening on :8080")

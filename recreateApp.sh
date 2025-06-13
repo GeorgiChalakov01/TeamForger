@@ -1,0 +1,2 @@
+./recreateDB.sh
+./recreateBackend.sh
