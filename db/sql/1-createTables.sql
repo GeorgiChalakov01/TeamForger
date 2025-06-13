@@ -3,14 +3,11 @@ BEGIN;
 -- SET client_encoding = 'LATIN1';
 
 CREATE TABLE users (
-	id integer NOT NULL,
-	name text,
-	email text NOT NULL,
-	passwordHash text NOT NULL,
-	isAdmin bool NOT NULL DEFAULT False
+    id SERIAL PRIMARY KEY,
+    name TEXT,
+    email TEXT NOT NULL UNIQUE,
+    passwordHash TEXT NOT NULL,
+    isAdmin BOOLEAN NOT NULL DEFAULT FALSE
 );
-
-ALTER TABLE ONLY users
-	ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
 COMMIT;

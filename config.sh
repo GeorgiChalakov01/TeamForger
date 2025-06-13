@@ -2,7 +2,7 @@
 
 # DB
 DB_CONTAINER_NAME="teamforger-db-1"
-DB_PWD="ChangeMe"
+DB_PWD="ChangeMe" # Don't add spaces and be careful with special symbols
 DB_SCHEMA="TF"
 DB_USER="user"
 DB_PORT="5432"
