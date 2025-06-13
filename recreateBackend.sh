@@ -1,8 +1,21 @@
+source ./config.sh
+
 cd backend
 ./rebuildImage.sh
 cd ..
 
 docker stop teamforger-backend-1
 docker rm teamforger-backend-1
-docker run -d --name teamforger-backend-1 -e VIRTUAL_HOST=teamforger.gchalakov.com -e LETSENCRYPT_HOST=teamforger.gchalakov.com --network net -p 8080:8080 teamforger-backend
+
+docker run -d \
+	--name teamforger-backend-1 \
+	-e DB_USER=$DB_USER \
+	-e DB_PWD=$DB_PWD \
+	-e DB_SCHEMA=$DB_SCHEMA \
+	-e VIRTUAL_HOST=$BE_HOST \
+	-e LETSENCRYPT_HOST=$BE_HOST \
+	--network net \
+	-p $BE_PORT \
+	teamforger-backend
+
 docker logs --follow teamforger-backend-1

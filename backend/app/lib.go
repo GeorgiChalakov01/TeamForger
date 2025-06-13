@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"net/http"
 	"net/mail"
 	"golang.org/x/crypto/bcrypt"
@@ -47,7 +48,14 @@ func HashPassword(email string, password string) string {
 }
 
 func Connect() (*pgx.Conn, error) {
-	conn, err := pgx.Connect(context.Background(), "postgres://postgres:ChangeMe@teamforger-db-1:5432/developerDB")
+	user := os.Getenv("DB_USER")
+	pass := os.Getenv("DB_PWD")
+	schema := os.Getenv("DB_SCHEMA")
+	port := os.Getenv("DB_PORT")
+
+	url := "postgres://" + user + ":" + pass + "@teamforger-db-1:" + port + "/" + schema
+
+	conn, err := pgx.Connect(context.Background(), url)
 	if err != nil {
 		return nil, err
 	}
