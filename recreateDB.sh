@@ -8,8 +8,8 @@ cd db
 cd ..
 
 docker run -d \
-	--name teamforger-db-1 \
-	-p $DB_PORT \
+	--name $DB_CONTAINER_NAME \
+	-p "$DB_PORT:$DB_PORT" \
 	-e POSTGRES_PASSWORD=$DB_PWD \
 	-e POSTGRES_USER=$DB_USER \
 	-e POSTGRES_DB=$DB_SCHEMA \

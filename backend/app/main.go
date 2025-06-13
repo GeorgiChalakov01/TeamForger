@@ -16,11 +16,15 @@ func main() {
 		password := r.FormValue("password")
 		repeatedPassword := r.FormValue("repeatedPassword")
 
-		ValidateForm(w, r, email, password, repeatedPassword)
+		signup.ValidateForm(w, r, email, password, repeatedPassword)
 		// Create account
-		hashedPassword := HashPassword(email, password)
-		conn, _ := Connect()
-		CreateAccount(conn, email, hashedPassword)
+		hashedPassword := signup.HashPassword(email, password)
+		conn, err := Connect()
+		if err != nil {
+			fmt.Println("Could not establish a connection with the DB. Error: %s", err)
+			return
+		}
+		signup.CreateAccount(conn, email, hashedPassword)
 	})
 
 	fmt.Println("Listening on :8080")
