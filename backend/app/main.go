@@ -25,7 +25,7 @@ func main() {
 			return
 		} else {
 			// Hash the Password
-			user.PasswordHash = signup.HashPassword(user.Email, user.Password)
+			user.PasswordHash = signup.HashPassword(user.Password)
 
 			// Connect to the DB
 			conn, err := Connect()

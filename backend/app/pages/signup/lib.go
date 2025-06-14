@@ -71,12 +71,17 @@ func ValidateForm(email string, password string, repeatedPassword string) string
 	return ""
 }
 
-func HashPassword(email string, password string) string {
+func HashPassword(password string) string {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
 	if err != nil {
 		fmt.Println(err)
 	}
 	return string(hashedPassword)
+}
+
+func CheckPasswordHash(password string, hashedPassword string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
 
 type User struct {
