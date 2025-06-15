@@ -149,7 +149,7 @@ func main() {
 			return
 		}
 		// Redirect to home page
-		http.Redirect(w, r, "/home", http.StatusSeeOther)
+		http.Redirect(w, r, "/home?success=welcomeBack", http.StatusSeeOther)
 	})
 	http.HandleFunc("/signup", func(w http.ResponseWriter, r *http.Request){
 		// Connect to the DB
@@ -171,6 +171,7 @@ func main() {
 	})
 	http.HandleFunc("/process-signup", func(w http.ResponseWriter, r *http.Request){
 		var user core.User
+		user.Name = r.FormValue("name")
 		user.Email = r.FormValue("email")
 		user.Password = r.FormValue("password")
 		user.RepeatedPassword = r.FormValue("repeatedPassword")
@@ -303,7 +304,7 @@ func main() {
 		}
 		
 		// Redirect to signin page
-		http.Redirect(w, r, "/signin", http.StatusSeeOther)
+		http.Redirect(w, r, "/signin?success=signedOut", http.StatusSeeOther)
 	})
 
 	fmt.Println("Listening on :8080")
