@@ -11,6 +11,7 @@ import (
 	"teamforger/backend/pages/signup"
 	"teamforger/backend/pages/signin"
 	"teamforger/backend/pages/home"
+	"teamforger/backend/pages/uploadCV"
 	"teamforger/backend/core"
 )
 
@@ -305,6 +306,97 @@ func main() {
 		
 		// Redirect to signin page
 		http.Redirect(w, r, "/signin?success=signedOut", http.StatusSeeOther)
+	})
+	http.HandleFunc("/uploadCV", func(w http.ResponseWriter, r *http.Request){
+		// Connect to the DB
+		conn, err := core.Connect()
+		if err != nil {
+			log.Printf("Database connection failed: %v", err)
+			http.Redirect(w, r, "/signin?error=databaseError", http.StatusSeeOther)
+			return
+		}
+		// Make sure to close the connection when the function exits
+		defer conn.Close(context.Background())
+
+		// Get user email
+		emailCookie, err := r.Cookie("user_email")
+		if err != nil {
+			log.Printf("User's email is not in the cookie: %v", err)
+			http.Redirect(w, r, "/error?error=cookieError", http.StatusSeeOther)
+		}
+		email := emailCookie.Value
+
+		if err := core.Authorize(conn, r); err != nil {
+			log.Printf("Authorization failed: %v", err)
+			http.Redirect(w, r, "/signin", http.StatusSeeOther)
+			return
+		}
+
+		// Get user data
+		user, err := core.GetUserData(conn, email)
+		if err != nil {
+			log.Printf("Retrieving user details failed: %v", err)
+			http.Redirect(w, r, "/error?error=databaseError", http.StatusSeeOther)
+		}
+
+		templ.Handler(uploadCV.UploadCV(user)).ServeHTTP(w, r)
+	})
+	http.HandleFunc("/process-uploadCV", func(w http.ResponseWriter, r *http.Request){
+		// Connect to the DB
+		conn, err := core.Connect()
+		if err != nil {
+			log.Printf("Database connection failed: %v", err)
+			http.Redirect(w, r, "/signin?error=databaseError", http.StatusSeeOther)
+			return
+		}
+		// Make sure to close the connection when the function exits
+		defer conn.Close(context.Background())
+
+		// Authorize
+		if err := core.Authorize(conn, r); err != nil {
+			log.Printf("Authorization failed: %v", err)
+			http.Redirect(w, r, "/home?error=authFailed", http.StatusSeeOther)
+			return
+		}
+
+		// Get the contents of the DOCX file
+		fileContents, err := core.ReceiveFile(w, r)
+		if err != nil {
+			log.Printf("Could not read uploaded file: %v", err)
+			http.Redirect(w, r, "/home?error=fileUploadError", http.StatusSeeOther)
+			return
+		}
+
+		// Convert the DOCX to Markdown
+		markdownContent, err := core.DocxToMarkDown(fileContents)
+		if err != nil {
+			log.Printf("DOCX conversion failed: %v", err)
+			http.Redirect(w, r, "/home?error=docxConversionError", http.StatusSeeOther)
+			return
+		}
+
+		fmt.Println("Converted Markdown Content:")
+		fmt.Println(markdownContent)
+
+		// Get user email
+		emailCookie, err := r.Cookie("user_email")
+		if err != nil {
+			log.Printf("User's email is not in the cookie: %v", err)
+			http.Redirect(w, r, "/error?error=cookieError", http.StatusSeeOther)
+		}
+		email := emailCookie.Value
+
+		// Get user data
+		user, err := core.GetUserData(conn, email)
+		if err != nil {
+			log.Printf("Retrieving user details failed: %v", err)
+			http.Redirect(w, r, "/error?error=databaseError", http.StatusSeeOther)
+		}
+
+		user.CV = markdownContent
+		// Store markdownContent in database
+		uploadCV.StoreUserCV(conn, user)
+		http.Redirect(w, r, "/home?success=CVConverted", http.StatusSeeOther)
 	})
 
 	fmt.Println("Listening on :8080")

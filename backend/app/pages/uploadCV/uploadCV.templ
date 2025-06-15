@@ -1,0 +1,11 @@
+package uploadCV
+
+import (
+    "teamforger/backend/core"
+    "teamforger/backend/pages/uploadCV/sections/form"
+    "teamforger/backend/pages/layout"
+)
+
+templ UploadCV(user core.User) {
+    @layout.Base(true, user, form.Form(user))
+}

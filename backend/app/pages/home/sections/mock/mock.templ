@@ -12,11 +12,11 @@ templ Welcome(user core.User) {
         <h1 class="h3 mb-3">Welcome, { user.Name }!</h1>
         <p class="text-muted mb-4">You're signed in as: { user.Email }</p>
         <div class="d-grid gap-3">
-            <a href="#" class="btn btn-lg btn-primary">
-                <i class="bi bi-plus-circle me-2"></i>Create New Project
+            <a href="/uploadCV" class="btn btn-lg btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>Upload your CV
             </a>
-            <a href="#" class="btn btn-lg btn-outline-primary">
-                <i class="bi bi-people me-2"></i>Manage Teams
+            <a href="/buildTeam" class="btn btn-lg btn-outline-primary">
+                <i class="bi bi-people me-2"></i>Build a team
             </a>
         </div>
     </div>

@@ -59,7 +59,7 @@ func Welcome(user core.User) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</p><div class=\"d-grid gap-3\"><a href=\"#\" class=\"btn btn-lg btn-primary\"><i class=\"bi bi-plus-circle me-2\"></i>Create New Project</a> <a href=\"#\" class=\"btn btn-lg btn-outline-primary\"><i class=\"bi bi-people me-2\"></i>Manage Teams</a></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</p><div class=\"d-grid gap-3\"><a href=\"/uploadCV\" class=\"btn btn-lg btn-primary\"><i class=\"bi bi-plus-circle me-2\"></i>Upload your CV</a> <a href=\"/buildTeam\" class=\"btn btn-lg btn-outline-primary\"><i class=\"bi bi-people me-2\"></i>Build a team</a></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

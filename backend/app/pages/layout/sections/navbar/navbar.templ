@@ -1,0 +1,42 @@
+package navbar
+
+import (
+    "teamforger/backend/core"
+)
+
+templ Navbar(isLoggedIn bool, user core.User) {
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-danger" href="/">
+                <i class="bi bi-people-fill me-2"></i>TeamForger
+            </a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    if isLoggedIn {
+                        <li class="nav-item">
+                            <a class="nav-link" href="/home">
+                                <i class="bi bi-house-door me-1"></i>Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-danger" href="/signout">
+                                <i class="bi bi-box-arrow-right me-1"></i>Sign Out
+                            </a>
+                        </li>
+                    } else {
+                        <li class="nav-item">
+                            <a class="nav-link" href="/signin">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-danger" href="/signup">
+                                <i class="bi bi-person-plus me-1"></i>Sign Up
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+}

@@ -9,7 +9,8 @@ CREATE TABLE users (
 	passwordHash TEXT NOT NULL,
 	sessionToken TEXT NOT NULL,
 	csrfToken TEXT NOT NULL,
-	isAdmin BOOLEAN NOT NULL DEFAULT FALSE
+	isAdmin BOOLEAN NOT NULL DEFAULT FALSE,
+	cv TEXT
 );
 
 COMMIT;

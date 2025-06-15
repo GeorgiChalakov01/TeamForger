@@ -29,7 +29,7 @@ func CreateUser (conn *pgx.Conn, user core.User) error {
 	// the tx commits successfully, this is a no-op
 	defer tx.Rollback(context.Background())
 
-	_, err = tx.Exec(context.Background(), "INSERT INTO users (name, email, passwordHash, sessionToken, csrfToken, isAdmin) VALUES ($1, $2, $3, $4, $5, $6)", user.Name, user.Email, user.PasswordHash, user.SessionToken, user.CSRFToken, user.IsAdmin)
+	_, err = tx.Exec(context.Background(), "INSERT INTO users (name, email, passwordHash, sessionToken, csrfToken, isAdmin, cv) VALUES ($1, $2, $3, $4, $5, $6, $7)", user.Name, user.Email, user.PasswordHash, user.SessionToken, user.CSRFToken, user.IsAdmin, "")
 
 	if err != nil {
 	    return err
