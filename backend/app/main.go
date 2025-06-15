@@ -4,17 +4,52 @@ import (
 	"fmt"
 	"net/http"
 	"log"
+	"time"
 	"context"
 	
 	"github.com/a-h/templ"
-	"gchalakov.com/TeamForger/pages/signup"
+	"teamforger/backend/pages/signup"
+	"teamforger/backend/pages/home"
+	"teamforger/backend/core"
 )
 
 func main() {
 	http.Handle("/", http.RedirectHandler("/signup", http.StatusSeeOther))
+	http.HandleFunc("/home", func(w http.ResponseWriter, r *http.Request){
+		// Connect to the DB
+		conn, err := core.Connect()
+		// Make sure to close the connection when the function exits
+		defer conn.Close(context.Background())
+
+		if err != nil {
+			log.Printf("Database connection failed: %v", err)
+			http.Redirect(w, r, "/error?error=databaseError", http.StatusSeeOther)
+			return
+		}
+		if err := core.Authorize(conn, r); err != nil {
+			er := http.StatusUnauthorized
+			http.Error(w, "Unauthorized", er)
+			return
+		}
+
+		emailCookie, err := r.Cookie("user_email")
+		if err != nil {
+			log.Printf("User's email is not in the cookie: %v", err)
+			http.Redirect(w, r, "/error?error=cookieError", http.StatusSeeOther)
+		}
+		email := emailCookie.Value
+
+		user, err := core.GetUserData(conn, email)
+		if err != nil {
+			log.Printf("Retrieving user details failed: %v", err)
+			http.Redirect(w, r, "/error?error=databaseError", http.StatusSeeOther)
+		}
+
+		templ.Handler(home.Home(user)).ServeHTTP(w, r)
+	})
 	http.Handle("/signup", templ.Handler(signup.SignUp()))
 	http.HandleFunc("/process-signup", func(w http.ResponseWriter, r *http.Request){
-		var user signup.User
+		var user core.User
 		user.Email = r.FormValue("email")
 		user.Password = r.FormValue("password")
 		user.RepeatedPassword = r.FormValue("repeatedPassword")
@@ -28,14 +63,21 @@ func main() {
 			user.PasswordHash = signup.HashPassword(user.Password)
 
 			// Connect to the DB
-			conn, err := Connect()
-			// Make sure to close the connection where the function exits
+			conn, err := core.Connect()
+			// Make sure to close the connection when the function exits
 			defer conn.Close(context.Background())
 
 			if err != nil {
 				log.Printf("Database connection failed: %v", err)
 				http.Redirect(w, r, "/signup?error=databaseError", http.StatusSeeOther)
 				return
+			}
+			// Create a session token
+			user.SessionToken, err = core.GenerateToken(32)
+			// Create a csrf token
+			user.CSRFToken, err = core.GenerateToken(32)
+			if err != nil {
+				http.Redirect(w, r, "/login?error=tokenGenerationFailed", http.StatusSeeOther)
 			}
 			// Create account
 			if err := signup.CreateUser(conn, user); err != nil {
@@ -48,8 +90,32 @@ func main() {
 				}
 				return
 			} else {
-				// Success! Redirect to login page
-				http.Redirect(w, r, "/login?success=accountCreated", http.StatusSeeOther)
+				// Success
+				// Set session cookie
+				http.SetCookie(w, &http.Cookie {
+					Name: "session_token",
+					Value: user.SessionToken,
+					Expires: time.Now().Add(23 * time.Hour),
+					HttpOnly: true,
+				})
+
+				// Set csrf token in a cookie
+				http.SetCookie(w, &http.Cookie {
+					Name: "csrf_token",
+					Value: user.CSRFToken,
+					Expires: time.Now().Add(23 * time.Hour),
+					HttpOnly: false,
+				})
+
+				// Set the user email in a cookie
+				http.SetCookie(w, &http.Cookie{
+					Name: "user_email",
+					Value: user.Email,
+					Expires: time.Now().Add(23 * time.Hour),
+					HttpOnly: true,
+				})
+				// Redirect to login page
+				http.Redirect(w, r, "/home?success=accountCreated", http.StatusSeeOther)
 			}
 		}
 	})

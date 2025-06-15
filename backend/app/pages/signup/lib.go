@@ -8,6 +8,8 @@ import (
 
 	"context"
 	"github.com/jackc/pgx/v5"
+
+	"teamforger/backend/core"
 )
 
 func ValidateForm(email string, password string, repeatedPassword string) string {
@@ -80,18 +82,8 @@ func HashPassword(password string) string {
 }
 
 func CheckPasswordHash(password string, hashedPassword string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 	return err == nil
-}
-
-type User struct {
-	Id int
-	Name string
-	Email string
-	Password string
-	RepeatedPassword string
-	PasswordHash string
-	IsAdmin bool
 }
 
 func CountUsers(conn *pgx.Conn) (int, error) {
@@ -110,7 +102,7 @@ func CountUsers(conn *pgx.Conn) (int, error) {
 	return count, nil
 }
 
-func CreateUser (conn *pgx.Conn, user User) error {
+func CreateUser (conn *pgx.Conn, user core.User) error {
 	userCount, err := CountUsers(conn)
 	if err != nil {
 		fmt.Println("Could not count the users. Error: ")
@@ -132,7 +124,7 @@ func CreateUser (conn *pgx.Conn, user User) error {
 	// the tx commits successfully, this is a no-op
 	defer tx.Rollback(context.Background())
 
-	_, err = tx.Exec(context.Background(), "INSERT INTO users (name, email, passwordHash, isAdmin) VALUES ($1, $2, $3, $4)", user.Name, user.Email, user.PasswordHash, user.IsAdmin)
+	_, err = tx.Exec(context.Background(), "INSERT INTO users (name, email, passwordHash, sessionToken, csrfToken, isAdmin) VALUES ($1, $2, $3, $4, $5, $6)", user.Name, user.Email, user.PasswordHash, user.SessionToken, user.CSRFToken, user.IsAdmin)
 
 	if err != nil {
 	    return err

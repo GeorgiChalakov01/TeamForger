@@ -1,4 +1,4 @@
-module gchalakov.com/TeamForger
+module teamforger/backend
 
 go 1.24.3
 
