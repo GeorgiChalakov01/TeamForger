@@ -1,7 +1,7 @@
 package core
 
 import (
-	//"fmt"
+	"fmt"
 	"os"
 
 	"context"
@@ -12,6 +12,8 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"log"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
@@ -40,6 +42,35 @@ func Connect() (*pgx.Conn, error) {
 		return nil, err
 	}
 	return conn, nil
+}
+
+func HashPassword(password string) string {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return string(hashedPassword)
+}
+
+func CheckPasswordHash(password string, hashedPassword string) error {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	return err
+}
+
+func CountUsers(conn *pgx.Conn) (int, error) {
+	rows, err := conn.Query(context.Background(), "SELECT count(id) FROM users")
+	if err != nil {
+		return -1, err
+	}
+
+	var count int
+	for rows.Next() {
+		err := rows.Scan(&count)
+		if err != nil {
+			return -1, err
+		}
+	}
+	return count, nil
 }
 
 func GenerateToken(length int) (string, error) {
@@ -91,3 +122,28 @@ func Authorize(con *pgx.Conn, r *http.Request) error {
 
 	return nil
 }
+
+func UpdateUserTokens(conn *pgx.Conn, user User) error {
+	// Start a transaction
+	tx, err := conn.Begin(context.Background())
+	if err != nil {
+	    return err
+	}
+	// Rollback is safe to call even if the tx is already closed, so if
+	// the tx commits successfully, this is a no-op
+	defer tx.Rollback(context.Background())
+
+	_, err = tx.Exec(context.Background(), "UPDATE users SET sessionToken = $1, csrfToken = $2 WHERE email = $3", user.SessionToken, user.CSRFToken, user.Email)
+
+	if err != nil {
+	    return err
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+	    return err
+	}
+
+	return nil
+}
+
