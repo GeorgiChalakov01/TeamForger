@@ -3,9 +3,9 @@ package signup
 import (
     "teamforger/backend/core"
     "teamforger/backend/pages/layout"
-    "teamforger/backend/pages/signup/sections"
+    "teamforger/backend/pages/signup/sections/signupForm"
 )
 
 templ SignUp() {
-    @layout.Base(false, core.User{}, sections.SignUpForm())
+    @layout.Base(false, core.User{}, signupForm.SignUpForm())
 }
