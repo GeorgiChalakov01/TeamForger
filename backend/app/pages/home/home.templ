@@ -2,10 +2,10 @@ package home
 
 import (
     "teamforger/backend/core"
-    "teamforger/backend/pages/home/sections"
+    "teamforger/backend/pages/home/sections/mock"
     "teamforger/backend/pages/layout"
 )
 
 templ Home(user core.User) {
-    @layout.Base(true, user, sections.Welcome(user))
+    @layout.Base(true, user, mock.Welcome(user))
 }

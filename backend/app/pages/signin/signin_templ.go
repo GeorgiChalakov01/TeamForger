@@ -11,7 +11,7 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"teamforger/backend/core"
 	"teamforger/backend/pages/layout"
-	"teamforger/backend/pages/signin/sections"
+	"teamforger/backend/pages/signin/sections/signinForm"
 )
 
 func SignIn() templ.Component {
@@ -35,7 +35,7 @@ func SignIn() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = layout.Base(false, core.User{}, sections.SignInForm()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = layout.Base(false, core.User{}, signinForm.SignInForm()).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

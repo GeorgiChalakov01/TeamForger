@@ -3,9 +3,9 @@ package signin
 import (
     "teamforger/backend/core"
     "teamforger/backend/pages/layout"
-    "teamforger/backend/pages/signin/sections"
+    "teamforger/backend/pages/signin/sections/signinForm"
 )
 
 templ SignIn() {
-    @layout.Base(false, core.User{}, sections.SignInForm())
+    @layout.Base(false, core.User{}, signinForm.SignInForm())
 }
