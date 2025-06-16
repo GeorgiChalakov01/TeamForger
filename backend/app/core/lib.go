@@ -23,6 +23,8 @@ import (
 	// Docx to MarkDown
 	"github.com/zakahan/docx2md"
 	"path/filepath"
+
+	"time"
 )
 
 type User struct {
@@ -237,4 +239,40 @@ func DocxToMarkDown(docxBytes []byte) (string, error) {
 	}
 
 	return mdString, nil
+}
+
+func GenerateAndSetTokens(w http.ResponseWriter, user *User) error {
+	var err error
+	user.SessionToken, err = GenerateToken(32)
+	if err != nil {
+		return fmt.Errorf("failed to generate session token: %w", err)
+	}
+
+	user.CSRFToken, err = GenerateToken(32)
+	if err != nil {
+		return fmt.Errorf("failed to generate CSRF token: %w", err)
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_token",
+		Value:    user.SessionToken,
+		Expires:  time.Now().Add(24 * time.Hour),
+		HttpOnly: true,
+	})
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "csrf_token",
+		Value:    user.CSRFToken,
+		Expires:  time.Now().Add(24 * time.Hour),
+		HttpOnly: false,
+	})
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "user_email",
+		Value:    user.Email,
+		Expires:  time.Now().Add(24 * time.Hour),
+		HttpOnly: true,
+	})
+
+	return nil
 }
