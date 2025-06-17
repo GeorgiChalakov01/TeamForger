@@ -1,0 +1,11 @@
+package buildTeam
+
+import (
+    "teamforger/backend/core"
+    "teamforger/backend/pages/buildTeam/sections/chat"
+    "teamforger/backend/pages/layout"
+)
+
+templ BuildTeam(user core.User) {
+    @layout.Base(true, user, chat.Chat(user))
+}

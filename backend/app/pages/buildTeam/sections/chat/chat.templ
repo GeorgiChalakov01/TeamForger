@@ -1,0 +1,199 @@
+package chat
+
+import (
+	"teamforger/backend/core"
+)
+
+templ Chat(user core.User) {
+<div class="col-md-12 col-lg-12">
+	<div class="card p-4">
+		<div class="d-flex flex-column h-100">
+			<!-- Full-height chat container -->
+			<div id="chat-messages" class="flex-grow-1 overflow-auto p-4 bg-light rounded mb-3" style="height: 70vh;">
+				<!-- Placeholder that will disappear after first message -->
+				<div id="chat-placeholder" class="text-center text-muted py-4">
+					Start chatting with your team building assistant...
+				</div>
+			</div>
+			
+			<div class="d-flex mt-auto">
+				<!-- Full-width input field -->
+				<input 
+					type="text" 
+					id="chat-input" 
+					class="form-control me-2 p-3" 
+					placeholder="Type your message..." 
+					style="font-size: 1.2rem;"
+					hx-ws="send"
+				/>
+				<!-- Larger button -->
+				<button 
+					class="btn btn-primary px-4 py-3" 
+					id="send-button"
+					style="font-size: 1.2rem; min-width: 120px;"
+					hx-ws="send:click"
+				>
+					Send
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			const chatInput = document.getElementById('chat-input');
+			const sendButton = document.getElementById('send-button');
+			const chatMessages = document.getElementById('chat-messages');
+			const chatPlaceholder = document.getElementById('chat-placeholder');
+			
+			// Connect to WebSocket
+			const socket = new WebSocket('ws://' + window.location.host + '/ws');
+			
+			// Track current assistant message element
+			let currentAssistantMessage = null;
+			let assistantMessageContent = '';
+			
+			socket.onmessage = function(event) {
+				const message = event.data;
+				
+				// Remove placeholder on first message
+				if (chatPlaceholder) {
+					chatPlaceholder.remove();
+				}
+				
+				// Create new assistant message if none exists
+				if (!currentAssistantMessage) {
+					currentAssistantMessage = document.createElement('div');
+					currentAssistantMessage.className = 'assistant-message mb-3';
+					chatMessages.appendChild(currentAssistantMessage);
+				}
+				
+				// Append content
+				assistantMessageContent += message;
+				currentAssistantMessage.innerHTML = marked.parse(assistantMessageContent);
+				
+				// Scroll to bottom
+				chatMessages.scrollTop = chatMessages.scrollHeight;
+			};
+			
+			function sendMessage() {
+				const message = chatInput.value.trim();
+				if (message) {
+					// Remove placeholder
+					if (chatPlaceholder) {
+						chatPlaceholder.remove();
+					}
+					
+					// Reset assistant message tracking
+					currentAssistantMessage = null;
+					assistantMessageContent = '';
+					
+					// Add user message to UI
+					const userMessageDiv = document.createElement('div');
+					userMessageDiv.className = 'user-message mb-3 text-end';
+					userMessageDiv.innerHTML = marked.parse(`**You:** ${message}`);
+					chatMessages.appendChild(userMessageDiv);
+					
+					// Send message via WebSocket
+					socket.send(message);
+					
+					// Clear input
+					chatInput.value = '';
+					
+					// Scroll to bottom
+					chatMessages.scrollTop = chatMessages.scrollHeight;
+					
+					// Focus input for next message
+					chatInput.focus();
+				}
+			}
+			
+			// Send on button click
+			sendButton.addEventListener('click', sendMessage);
+			
+			// Send on Enter key
+			chatInput.addEventListener('keypress', function(e) {
+				if (e.key === 'Enter') {
+					sendMessage();
+				}
+			});
+			
+			// Focus input on load
+			chatInput.focus();
+		});
+	</script>
+	
+	<style>
+		/* Improved chat styling */
+		#chat-messages {
+			display: flex;
+			flex-direction: column;
+			gap: 1.5rem;
+			font-size: 1.2rem;
+			line-height: 1.8;
+		}
+		
+		.user-message div, .assistant-message div {
+			padding: 1.2rem;
+			border-radius: 12px;
+			display: inline-block;
+			max-width: 90%;
+		}
+		
+		.user-message div {
+			background: linear-gradient(to right, #6a11cb, #2575fc);
+			color: white;
+			border-bottom-right-radius: 4px;
+		}
+		
+		.assistant-message div {
+			background-color: #f8f9fa;
+			border: 1px solid #dee2e6;
+			border-bottom-left-radius: 4px;
+		}
+		
+		/* Markdown styling */
+		#chat-messages p {
+			margin-bottom: 0.8rem;
+		}
+		
+		#chat-messages h1, 
+		#chat-messages h2, 
+		#chat-messages h3 {
+			margin-top: 1.5rem;
+			margin-bottom: 1rem;
+		}
+		
+		#chat-messages ul, 
+		#chat-messages ol {
+			padding-left: 2rem;
+			margin-bottom: 1rem;
+		}
+		
+		#chat-messages li {
+			margin-bottom: 0.5rem;
+		}
+		
+		#chat-messages code {
+			background-color: #e9ecef;
+			padding: 0.3rem 0.5rem;
+			border-radius: 6px;
+			font-family: monospace;
+			font-size: 1.1rem;
+		}
+		
+		#chat-messages pre {
+			background-color: #2d2d2d;
+			color: #f8f8f2;
+			padding: 1rem;
+			border-radius: 6px;
+			overflow-x: auto;
+			margin-bottom: 1.5rem;
+		}
+		
+		#chat-messages pre code {
+			background-color: transparent;
+			padding: 0;
+		}
+	</style>
+}
