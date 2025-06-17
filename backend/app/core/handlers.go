@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"github.com/jackc/pgx/v5"
+	"github.com/gorilla/websocket"
 )
 
 func WithDBConnection(handler func(w http.ResponseWriter, r *http.Request, conn *pgx.Conn)) http.HandlerFunc {
@@ -53,4 +54,17 @@ func RedirectIfAuthorized(conn *pgx.Conn, w http.ResponseWriter, r *http.Request
 		return true
 	}
 	return false
+}
+
+func WithWebSocket(handler func(w http.ResponseWriter, r *http.Request, conn *pgx.Conn, user User, ws *websocket.Conn)) http.HandlerFunc {
+	return WithAuthorization(func(w http.ResponseWriter, r *http.Request, conn *pgx.Conn, user User) {
+		ws, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			log.Printf("WebSocket upgrade failed: %v", err)
+			return
+		}
+		defer ws.Close()
+		
+		handler(w, r, conn, user, ws)
+	})
 }
