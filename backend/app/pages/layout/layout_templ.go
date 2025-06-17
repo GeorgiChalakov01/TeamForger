@@ -12,7 +12,7 @@ import (
 	"teamforger/backend/core"
 )
 
-func Base(isLoggedIn bool, user core.User, content templ.Component) templ.Component {
+func Notification() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -33,22 +33,59 @@ func Base(isLoggedIn bool, user core.User, content templ.Component) templ.Compon
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>TeamForger</title><link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css\" rel=\"stylesheet\"><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css\"><script src=\"https://cdn.jsdelivr.net/npm/marked/marked.min.js\"></script><style>\n\t\t\tbody {\n\t\t\t\tbackground: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);\n\t\t\t\tmin-height: 100vh;\n\t\t\t\tcolor: #333;\n\t\t\t}\n\t\t\t.card {\n\t\t\t\tborder-radius: 15px;\n\t\t\t\tbox-shadow: 0 10px 20px rgba(0,0,0,0.1);\n\t\t\t\tborder: none;\n\t\t\t}\n\t\t\t.btn-primary {\n\t\t\t\tbackground: linear-gradient(to right, #6a11cb, #2575fc);\n\t\t\t\tborder: none;\n\t\t\t}\n\t\t\t.navbar {\n\t\t\t\tbackground: rgba(255, 255, 255, 0.9);\n\t\t\t\tbackdrop-filter: blur(10px);\n\t\t\t\tbox-shadow: 0 2px 10px rgba(0,0,0,0.1);\n\t\t\t}\n\t\t\t.form-control:focus {\n\t\t\t\tborder-color: #6a11cb;\n\t\t\t\tbox-shadow: 0 0 0 0.25rem rgba(106, 17, 203, 0.25);\n\t\t\t}\n\t\t</style></head><body><nav class=\"navbar navbar-expand-lg navbar-light\"><div class=\"container\"><a class=\"navbar-brand fw-bold text-primary\" href=\"/\"><i class=\"bi bi-people-fill me-2\"></i>TeamForger</a><div class=\"collapse navbar-collapse\"><ul class=\"navbar-nav ms-auto\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"notification\" class=\"position-fixed top-0 start-50 translate-middle-x mt-3\" style=\"z-index: 1050; display: none; min-width: 300px; max-width: 80%;\"><div class=\"alert alert-dismissible fade show\" role=\"alert\" style=\"box-shadow: 0 4px 12px rgba(0,0,0,0.15);\"><span id=\"notification-message\"></span> <button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button></div></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func Base(isLoggedIn bool, user core.User, content templ.Component) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var2 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var2 == nil {
+			templ_7745c5c3_Var2 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>TeamForger</title><link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css\" rel=\"stylesheet\"><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css\"><script src=\"https://cdn.jsdelivr.net/npm/marked/marked.min.js\"></script><style>\n            body {\n                background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);\n                min-height: 100vh;\n                color: #333;\n            }\n            .card {\n                border-radius: 15px;\n                box-shadow: 0 10px 20px rgba(0,0,0,0.1);\n                border: none;\n            }\n            .btn-primary {\n                background: linear-gradient(to right, #6a11cb, #2575fc);\n                border: none;\n            }\n            .navbar {\n                background: rgba(255, 255, 255, 0.9);\n                backdrop-filter: blur(10px);\n                box-shadow: 0 2px 10px rgba(0,0,0,0.1);\n            }\n            .form-control:focus {\n                border-color: #6a11cb;\n                box-shadow: 0 0 0 0.25rem rgba(106, 17, 203, 0.25);\n            }\n        </style></head><body><nav class=\"navbar navbar-expand-lg navbar-light\"><div class=\"container\"><a class=\"navbar-brand fw-bold text-primary\" href=\"/\"><i class=\"bi bi-people-fill me-2\"></i>TeamForger</a><div class=\"collapse navbar-collapse\"><ul class=\"navbar-nav ms-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if isLoggedIn {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<li class=\"nav-item\"><a class=\"nav-link\" href=\"/home\"><i class=\"bi bi-house-door me-1\"></i>Home</a></li><li class=\"nav-item\"><a class=\"nav-link\" href=\"/signout\"><i class=\"bi bi-box-arrow-right me-1\"></i>Sign Out</a></li>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<li class=\"nav-item\"><a class=\"nav-link\" href=\"/home\"><i class=\"bi bi-house-door me-1\"></i>Home</a></li><li class=\"nav-item\"><a class=\"nav-link\" href=\"/signout\"><i class=\"bi bi-box-arrow-right me-1\"></i>Sign Out</a></li>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<li class=\"nav-item\"><a class=\"nav-link\" href=\"/signin\"><i class=\"bi bi-box-arrow-in-right me-1\"></i>Sign In</a></li><li class=\"nav-item\"><a class=\"nav-link\" href=\"/signup\"><i class=\"bi bi-person-plus me-1\"></i>Sign Up</a></li>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<li class=\"nav-item\"><a class=\"nav-link\" href=\"/signin\"><i class=\"bi bi-box-arrow-in-right me-1\"></i>Sign In</a></li><li class=\"nav-item\"><a class=\"nav-link\" href=\"/signup\"><i class=\"bi bi-person-plus me-1\"></i>Sign Up</a></li>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</ul></div></div></nav><main class=\"container py-5\"><div class=\"row justify-content-center\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</ul></div></div></nav>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = Notification().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<main class=\"container py-5\"><div class=\"row justify-content-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -56,7 +93,7 @@ func Base(isLoggedIn bool, user core.User, content templ.Component) templ.Compon
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div></main><script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js\"></script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div></main><script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js\"></script><script>\n            // Message mappings\n            const successMessages = {\n                accountCreated: \"Account created successfully!\",\n                welcomeBack: \"Welcome back!\",\n                signedOut: \"You have been signed out.\",\n                CVConverted: \"CV uploaded and converted successfully!\"\n            };\n            \n            const errorMessages = {\n                databaseError: \"Database error. Please try again later.\",\n                cookieError: \"Cookie error. Please sign in again.\",\n                tokenGenerationFailed: \"Failed to generate tokens. Please try again.\",\n                tokenUpdateFailed: \"Failed to update tokens. Please try again.\",\n                emailNotFound: \"Email not found.\",\n                wrongPassword: \"Incorrect password.\",\n                duplicateEmail: \"Email already in use.\",\n                createAccountError: \"Failed to create account. Please try again.\",\n                fileUploadError: \"File upload failed. Please try again.\",\n                docxConversionError: \"Failed to convert DOCX file.\",\n                cvStorageFailed: \"Failed to store CV. Please try again.\",\n                notAdmin: \"You must be an administrator to access this page.\",\n                tokenClearFailed: \"Failed to clear session tokens.\"\n            };\n            \n            document.addEventListener('DOMContentLoaded', function() {\n                const urlParams = new URLSearchParams(window.location.search);\n                const notification = document.getElementById('notification');\n                const messageSpan = document.getElementById('notification-message');\n                const alertDiv = notification.querySelector('.alert');\n                \n                // Check for success message\n                const successParam = urlParams.get('success');\n                if (successParam && successMessages[successParam]) {\n                    messageSpan.textContent = successMessages[successParam];\n                    alertDiv.classList.add('alert-success');\n                    notification.style.display = 'block';\n                    \n                    // Auto-hide after 5 seconds\n                    setTimeout(() => {\n                        notification.style.display = 'none';\n                    }, 5000);\n                }\n                \n                // Check for error message\n                const errorParam = urlParams.get('error');\n                if (errorParam && errorMessages[errorParam]) {\n                    messageSpan.textContent = errorMessages[errorParam];\n                    alertDiv.classList.add('alert-danger');\n                    notification.style.display = 'block';\n                }\n                \n                // Close button handler\n                notification.querySelector('.btn-close').addEventListener('click', function() {\n                    notification.style.display = 'none';\n                });\n                \n                // Remove query params from URL without reloading\n                const cleanUrl = window.location.protocol + \"//\" + window.location.host + window.location.pathname;\n                window.history.replaceState({}, document.title, cleanUrl);\n            });\n        </script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
