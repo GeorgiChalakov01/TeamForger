@@ -12,6 +12,7 @@ import (
 	"teamforger/backend/pages/signin"
 	"teamforger/backend/pages/home"
 	"teamforger/backend/pages/uploadCV"
+	"teamforger/backend/pages/buildTeam"
 )
 
 func main() {
@@ -166,6 +167,14 @@ func main() {
 		}
 
 		http.Redirect(w, r, "/home?success=CVConverted", http.StatusSeeOther)
+	}))
+
+	http.HandleFunc("/buildTeam", core.WithAuthorization(func(w http.ResponseWriter, r *http.Request, conn *pgx.Conn, user core.User) {
+		templ.Handler(buildTeam.BuildTeam(user)).ServeHTTP(w, r)
+	}))
+
+	http.HandleFunc("/ws", core.WithAuthorization(func(w http.ResponseWriter, r *http.Request, conn *pgx.Conn, user core.User) {
+		core.HandleChat(w, r, conn, user)
 	}))
 
 
