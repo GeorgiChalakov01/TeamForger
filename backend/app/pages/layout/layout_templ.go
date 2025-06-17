@@ -33,7 +33,7 @@ func Base(isLoggedIn bool, user core.User, content templ.Component) templ.Compon
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>TeamForger</title><link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css\" rel=\"stylesheet\"><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css\"><style>\n\t\t\tbody {\n\t\t\t\tbackground: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);\n\t\t\t\tmin-height: 100vh;\n\t\t\t\tcolor: #333;\n\t\t\t}\n\t\t\t.card {\n\t\t\t\tborder-radius: 15px;\n\t\t\t\tbox-shadow: 0 10px 20px rgba(0,0,0,0.1);\n\t\t\t\tborder: none;\n\t\t\t}\n\t\t\t.btn-primary {\n\t\t\t\tbackground: linear-gradient(to right, #6a11cb, #2575fc);\n\t\t\t\tborder: none;\n\t\t\t}\n\t\t\t.navbar {\n\t\t\t\tbackground: rgba(255, 255, 255, 0.9);\n\t\t\t\tbackdrop-filter: blur(10px);\n\t\t\t\tbox-shadow: 0 2px 10px rgba(0,0,0,0.1);\n\t\t\t}\n\t\t\t.form-control:focus {\n\t\t\t\tborder-color: #6a11cb;\n\t\t\t\tbox-shadow: 0 0 0 0.25rem rgba(106, 17, 203, 0.25);\n\t\t\t}\n\t\t</style></head><body><nav class=\"navbar navbar-expand-lg navbar-light\"><div class=\"container\"><a class=\"navbar-brand fw-bold text-primary\" href=\"/\"><i class=\"bi bi-people-fill me-2\"></i>TeamForger</a><div class=\"collapse navbar-collapse\"><ul class=\"navbar-nav ms-auto\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>TeamForger</title><link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css\" rel=\"stylesheet\"><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css\"><script src=\"https://cdn.jsdelivr.net/npm/marked/marked.min.js\"></script><style>\n\t\t\tbody {\n\t\t\t\tbackground: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);\n\t\t\t\tmin-height: 100vh;\n\t\t\t\tcolor: #333;\n\t\t\t}\n\t\t\t.card {\n\t\t\t\tborder-radius: 15px;\n\t\t\t\tbox-shadow: 0 10px 20px rgba(0,0,0,0.1);\n\t\t\t\tborder: none;\n\t\t\t}\n\t\t\t.btn-primary {\n\t\t\t\tbackground: linear-gradient(to right, #6a11cb, #2575fc);\n\t\t\t\tborder: none;\n\t\t\t}\n\t\t\t.navbar {\n\t\t\t\tbackground: rgba(255, 255, 255, 0.9);\n\t\t\t\tbackdrop-filter: blur(10px);\n\t\t\t\tbox-shadow: 0 2px 10px rgba(0,0,0,0.1);\n\t\t\t}\n\t\t\t.form-control:focus {\n\t\t\t\tborder-color: #6a11cb;\n\t\t\t\tbox-shadow: 0 0 0 0.25rem rgba(106, 17, 203, 0.25);\n\t\t\t}\n\t\t</style></head><body><nav class=\"navbar navbar-expand-lg navbar-light\"><div class=\"container\"><a class=\"navbar-brand fw-bold text-primary\" href=\"/\"><i class=\"bi bi-people-fill me-2\"></i>TeamForger</a><div class=\"collapse navbar-collapse\"><ul class=\"navbar-nav ms-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -48,7 +48,7 @@ func Base(isLoggedIn bool, user core.User, content templ.Component) templ.Compon
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</ul></div></div></nav><main class=\"container py-5\"><div class=\"row justify-content-center\"><div class=\"col-md-8 col-lg-6\"><div class=\"card p-4\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</ul></div></div></nav><main class=\"container py-5\"><div class=\"row justify-content-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -56,7 +56,7 @@ func Base(isLoggedIn bool, user core.User, content templ.Component) templ.Compon
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div></div></div></main><script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js\"></script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div></main><script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js\"></script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

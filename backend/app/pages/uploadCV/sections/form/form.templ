@@ -5,19 +5,23 @@ import (
 )
 
 templ Form(user core.User) {
-<form class="needs-validation" action="/process-uploadCV" method="post" enctype="multipart/form-data" novalidate>
-	<!-- CSRF Protection -->
-	<input type="hidden" name="csrf_token" value={ user.CSRFToken }>
-	
-	<!-- File upload input -->
-	<div class="mb-3">
-		<label for="file" class="form-label">Input CV in docx format here</label>
-		<input class="form-control" type="file" id="file" name="file" accept=".docx" required>
-	</div>
+<div class="col-md-8 col-lg-6">
+	<div class="card p-4">
+		<form class="needs-validation" action="/process-uploadCV" method="post" enctype="multipart/form-data" novalidate>
+			<!-- CSRF Protection -->
+			<input type="hidden" name="csrf_token" value={ user.CSRFToken }>
+			
+			<!-- File upload input -->
+			<div class="mb-3">
+				<label for="file" class="form-label">Input CV in docx format here</label>
+				<input class="form-control" type="file" id="file" name="file" accept=".docx" required>
+			</div>
 
-	<!-- Submit Button -->
-	<button type="submit" class="btn btn-primary w-100 py-2 mb-3">
-		Upload CV<i class="bi bi-arrow-right-short"></i>
-	</button>
-</form>
+			<!-- Submit Button -->
+			<button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+				Upload CV<i class="bi bi-arrow-right-short"></i>
+			</button>
+		</form>
+	</div>
+</div>
 }

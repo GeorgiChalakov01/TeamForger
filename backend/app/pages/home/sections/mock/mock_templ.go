@@ -33,14 +33,14 @@ func Welcome(user core.User) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"text-center\"><div class=\"mb-4\"><i class=\"bi bi-check-circle-fill text-success\" style=\"font-size: 4rem;\"></i></div><h1 class=\"h3 mb-3\">Welcome, ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"col-md-8 col-lg-6\"><div class=\"card p-4\"><div class=\"text-center\"><div class=\"mb-4\"><i class=\"bi bi-check-circle-fill text-success\" style=\"font-size: 4rem;\"></i></div><h1 class=\"h3 mb-3\">Welcome, ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(user.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/home/sections/mock/mock.templ`, Line: 12, Col: 48}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/home/sections/mock/mock.templ`, Line: 14, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -53,13 +53,13 @@ func Welcome(user core.User) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(user.Email)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/home/sections/mock/mock.templ`, Line: 13, Col: 68}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/home/sections/mock/mock.templ`, Line: 15, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</p><div class=\"d-grid gap-3\"><a href=\"/uploadCV\" class=\"btn btn-lg btn-primary\"><i class=\"bi bi-plus-circle me-2\"></i>Upload your CV</a> <a href=\"/buildTeam\" class=\"btn btn-lg btn-outline-primary\"><i class=\"bi bi-people me-2\"></i>Build a team</a></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</p><div class=\"d-grid gap-3\"><a href=\"/uploadCV\" class=\"btn btn-lg btn-primary\"><i class=\"bi bi-plus-circle me-2\"></i>Upload your CV</a> <a href=\"/buildTeam\" class=\"btn btn-lg btn-outline-primary\"><i class=\"bi bi-people me-2\"></i>Build a team</a></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
