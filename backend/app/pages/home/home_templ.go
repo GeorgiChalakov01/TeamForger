@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"teamforger/backend/core"
-	"teamforger/backend/pages/home/sections/mock"
+	"teamforger/backend/pages/home/sections/welcome"
 	"teamforger/backend/pages/layout"
 )
 
@@ -35,7 +35,7 @@ func Home(user core.User) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = layout.Base(true, user, mock.Welcome(user)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = layout.Base(true, user, welcome.Welcome(user)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -1,4 +1,4 @@
-package mock
+package welcome
 
 import (
 	"teamforger/backend/core"
@@ -17,9 +17,11 @@ templ Welcome(user core.User) {
 			<a href="/uploadCV" class="btn btn-lg btn-primary">
 			<i class="bi bi-plus-circle me-2"></i>Upload your CV
 			</a>
+			if user.IsAdmin == true {
 			<a href="/buildTeam" class="btn btn-lg btn-outline-primary">
 			<i class="bi bi-people me-2"></i>Build a team
 			</a>
+			}
 		</div>
 		</div>
 	</div>

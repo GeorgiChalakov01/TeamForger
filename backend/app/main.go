@@ -170,6 +170,10 @@ func main() {
 	}))
 
 	http.HandleFunc("/buildTeam", core.WithAuthorization(func(w http.ResponseWriter, r *http.Request, conn *pgx.Conn, user core.User) {
+		if user.IsAdmin != true {
+			http.Redirect(w, r, "/home?error=notAdmin", http.StatusSeeOther)
+			return
+		}
 		templ.Handler(buildTeam.BuildTeam(user)).ServeHTTP(w, r)
 	}))
 
