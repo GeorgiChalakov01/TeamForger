@@ -24,6 +24,10 @@ import (
 	"path/filepath"
 
 	"time"
+
+	"github.com/pgvector/pgvector-go"
+	"bytes"
+	"encoding/json"
 )
 
 type User struct {
@@ -274,4 +278,84 @@ func GenerateAndSetTokens(w http.ResponseWriter, user *User) error {
 	})
 
 	return nil
+}
+
+func GetRelevantCVChunks(conn *pgx.Conn, queryEmbedding []float32, limit int) ([]string, error) {
+    vec := pgvector.NewVector(queryEmbedding)
+    rows, err := conn.Query(
+        context.Background(),
+	`SELECT 'Employee: ' || name || chr(10) || chunk 
+        FROM cv_chunks join users on users.id = cv_chunks.user_id
+        ORDER BY embedding <=> $1 
+        LIMIT $2`,
+        vec, limit,
+    )
+    if err != nil {
+        return nil, fmt.Errorf("failed to query CV chunks: %w", err)
+    }
+    defer rows.Close()
+
+    var chunks []string
+    for rows.Next() {
+        var chunk string
+        if err := rows.Scan(&chunk); err != nil {
+            return chunks, err
+        }
+        chunks = append(chunks, chunk)
+    }
+    return chunks, nil
+}
+
+func GetEmbedding(text string) ([]float32, error) {
+	model := os.Getenv("OLLAMA_EMB_MODEL")
+	if model == "" {
+		model = "nomic-embed-text"
+	}
+	
+	apiURL := os.Getenv("OLLAMA_EMB_API")
+	if apiURL == "" {
+		apiURL = "http://localhost:11434/api/embeddings"
+	}
+
+	// Create request payload
+	payload := map[string]string{
+		"model":  model,
+		"prompt": text,
+	}
+	
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling JSON: %w", err)
+	}
+
+	// Create HTTP request
+	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	// Send request with timeout
+	client := &http.Client{Timeout: 30 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// Check for successful response
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("API error [%d]: %s", resp.StatusCode, string(body))
+	}
+
+	// Parse response
+	var embeddingResp struct {
+		Embedding []float32 `json:"embedding"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&embeddingResp); err != nil {
+		return nil, fmt.Errorf("error decoding response: %w", err)
+	}
+
+	return embeddingResp.Embedding, nil
 }

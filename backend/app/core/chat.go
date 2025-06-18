@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"bufio"
 	"bytes"
 	"encoding/json"
@@ -71,15 +72,12 @@ func HandleChat(w http.ResponseWriter, r *http.Request, conn *pgx.Conn, user Use
 	}
 	defer ws.Close()
 
-	// Get CV as context
-	cvContext := ""
-
-	// Original system prompt without think tag instructions
-	systemPrompt := cvContext + `You are an expert team builder assistant. Help the user form effective teams based on their project requirements. 
-	Ask clarifying questions if needed and provide insightful suggestions.`
+	// Base system prompt without context
+	baseSystemPrompt := `You are an expert team builder assistant. Help the user form effective teams based on their project requirements.
+Ask clarifying questions if needed and provide insightful suggestions.`
 
 	conversation := []ChatMessage{
-		{Role: "system", Content: systemPrompt},
+		{Role: "system", Content: baseSystemPrompt},
 	}
 
 	for {
@@ -93,11 +91,37 @@ func HandleChat(w http.ResponseWriter, r *http.Request, conn *pgx.Conn, user Use
 		userMsg := string(message)
 		conversation = append(conversation, ChatMessage{Role: "user", Content: userMsg})
 
+		// NEW: Get context from CV chunks
+		cvContext := ""
+		queryEmbedding, err := GetEmbedding(userMsg)
+		if err == nil {
+			chunks, err := GetRelevantCVChunks(conn, queryEmbedding, 3) // Get top 3 chunks
+			if err == nil && len(chunks) > 0 {
+				cvContext = "\n\nRelevant CV context:\n"
+				for i, chunk := range chunks {
+					cvContext += fmt.Sprintf("- Context %d: %s\n", i+1, chunk)
+				}
+				fmt.Println(cvContext)
+			} else if err != nil {
+				log.Printf("Error getting CV context: %v", err)
+			}
+		} else {
+			log.Printf("Error getting embedding: %v", err)
+		}
+
+		// Update system prompt with context
+		systemPrompt := baseSystemPrompt + cvContext
+
+		// Update the system message in the conversation
+		if len(conversation) > 0 && conversation[0].Role == "system" {
+			conversation[0].Content = systemPrompt
+		}
+
 		// Call Ollama API with streaming
 		ollamaReq := OllamaRequest{
-			Model:    os.Getenv("OLLAMA_MODEL"),
+			Model:	os.Getenv("OLLAMA_MODEL"),
 			Messages: conversation,
-			Stream:   true, 
+			Stream:   true,
 		}
 
 		numCTX, err := strconv.Atoi(os.Getenv("OLLAMA_CTX"))
@@ -171,7 +195,7 @@ func HandleChat(w http.ResponseWriter, r *http.Request, conn *pgx.Conn, user Use
 		// Add full assistant response to conversation
 		fullResponse := assistantResponseBuilder.String()
 		conversation = append(conversation, ChatMessage{
-			Role:    "assistant",
+			Role:	"assistant",
 			Content: fullResponse,
 		})
 	}
