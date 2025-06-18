@@ -162,6 +162,7 @@ func main() {
 
 		user.CV = markdownContent
 		if err := uploadCV.StoreUserCV(conn, user); err != nil {
+			fmt.Println(err)
 			http.Redirect(w, r, "/home?error=cvStorageFailed", http.StatusSeeOther)
 			return
 		}

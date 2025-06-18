@@ -28,6 +28,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/natefinch/atomic v1.0.1 // indirect
+	github.com/pgvector/pgvector-go v0.3.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/zakahan/docx2md v1.1.1 // indirect
 	golang.org/x/mod v0.24.0 // indirect

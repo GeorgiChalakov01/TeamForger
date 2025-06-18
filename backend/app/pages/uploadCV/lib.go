@@ -9,6 +9,15 @@ import (
 	"sort"
 	"strings"
 	"fmt"
+
+	"bytes"
+	"encoding/json"
+	"io"
+	"net/http"
+	"os"
+	"time"
+
+	"github.com/pgvector/pgvector-go"
 )
 
 func chunkCV(cv string) []string {
@@ -184,13 +193,67 @@ func isEnvironmentEnd(currentIndex int, lines []string) bool {
 	return false
 }
 
-func StoreUserCV(conn *pgx.Conn, user core.User) error {
-	fmt.Println(user.CV)
-	chunks := chunkCV(user.CV)
-	for i := 0; i < len(chunks); i++ {
-		fmt.Println("==================================")
-		fmt.Println(chunks[i])
+type EmbeddingResponse struct {
+	Embedding []float32 `json:"embedding"`
+}
+
+func GetEmbedding(text string) ([]float32, error) {
+	// Get configuration from environment variables
+	model := os.Getenv("OLLAMA_EMB_MODEL")
+	if model == "" {
+		model = "nomic-embed-text"
+		return nil, fmt.Errorf("OLLAMA_EMB_MODEL environment variable not set")
 	}
+
+	apiURL := os.Getenv("OLLAMA_EMB_API")
+	if apiURL == "" {
+		apiURL = "http://localhost:11434/api/embeddings" // Default if not set
+	}
+
+	// Create request payload
+	payload := map[string]string{
+		"model":  model,
+		"prompt": text,
+	}
+
+	// Marshal payload to JSON
+	jsonData, err := json.Marshal(payload)
+	if err != nil {
+		return nil, fmt.Errorf("error marshaling JSON: %w", err)
+	}
+
+	// Create HTTP request with timeout
+	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	// Send request with timeout
+	client := &http.Client{Timeout: 30 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// Check for successful response
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("API error [%d]: %s", resp.StatusCode, string(body))
+	}
+
+	// Parse response
+	var embeddingResp EmbeddingResponse
+	if err := json.NewDecoder(resp.Body).Decode(&embeddingResp); err != nil {
+		return nil, fmt.Errorf("error decoding response: %w", err)
+	}
+
+	return embeddingResp.Embedding, nil
+}
+
+func StoreUserCV(conn *pgx.Conn, user core.User) error {
+	// Store the original CV.
 	// Start a transaction
 	tx, err := conn.Begin(context.Background())
 	if err != nil {
@@ -211,6 +274,36 @@ func StoreUserCV(conn *pgx.Conn, user core.User) error {
 		return err
 	}
 
+	// Insert the chunked CV.
+	chunks := chunkCV(user.CV)
+	for i := 0; i < len(chunks); i++ {
+		embeddingFA, err := GetEmbedding(chunks[i])
+		if err != nil {
+			fmt.Printf("Error: %v\n", err)
+			return err
+		}
+		embedding := pgvector.NewVector(embeddingFA)
+
+		// Start a transaction
+		tx, err := conn.Begin(context.Background())
+		if err != nil {
+			return err
+		}
+		// Rollback is safe to call even if the tx is already closed, so if
+		// the tx commits successfully, this is a no-op
+		defer tx.Rollback(context.Background())
+
+		_, err = tx.Exec(context.Background(), "INSERT INTO cv_chunks (user_id, chunk, embedding) VALUES ($1, $2, $3)", user.Id, chunks[i], embedding)
+
+		if err != nil {
+			return err
+		}
+
+		err = tx.Commit(context.Background())
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
