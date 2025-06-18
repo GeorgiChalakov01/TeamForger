@@ -71,11 +71,8 @@ func HandleChat(w http.ResponseWriter, r *http.Request, conn *pgx.Conn, user Use
 	}
 	defer ws.Close()
 
-	// Get user's CV as context
+	// Get CV as context
 	cvContext := ""
-	if user.CV != "" {
-		cvContext = "Here is the user's CV for context:\n" + user.CV + "\n\n"
-	}
 
 	// Original system prompt without think tag instructions
 	systemPrompt := cvContext + `You are an expert team builder assistant. Help the user form effective teams based on their project requirements. 
