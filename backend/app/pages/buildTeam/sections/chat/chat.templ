@@ -24,14 +24,12 @@ templ Chat(user core.User) {
 					class="form-control me-2 p-3" 
 					placeholder="Type your message..." 
 					style="font-size: 1.2rem;"
-					hx-ws="send"
 				/>
 				<!-- Larger button -->
 				<button 
 					class="btn btn-primary px-4 py-3" 
 					id="send-button"
 					style="font-size: 1.2rem; min-width: 120px;"
-					hx-ws="send:click"
 				>
 					Send
 				</button>
@@ -46,40 +44,81 @@ templ Chat(user core.User) {
 			const chatMessages = document.getElementById('chat-messages');
 			const chatPlaceholder = document.getElementById('chat-placeholder');
 			
-			// Connect to WebSocket
-			const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-			const socket = new WebSocket(protocol + '//' + window.location.host + '/ws');
-			
-			// Track current assistant message element
+			let socket = null;
 			let currentAssistantMessage = null;
 			let assistantMessageContent = '';
+			let reconnectAttempts = 0;
+			const maxReconnectAttempts = 5;
+			const reconnectDelayBase = 1000; // 1 second
 			
-			socket.onmessage = function(event) {
-				const message = event.data;
+			function connectWebSocket() {
+				const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+				socket = new WebSocket(protocol + '//' + window.location.host + '/ws');
 				
-				// Remove placeholder on first message
-				if (chatPlaceholder) {
-					chatPlaceholder.remove();
+				socket.onopen = function() {
+					reconnectAttempts = 0;
+					console.log('WebSocket connection established');
+				};
+				
+				socket.onmessage = function(event) {
+					const message = event.data;
+					
+					// Handle ping requests from server
+					if (message === "ping") {
+						socket.send("pong");
+						return;
+					}
+					
+					// Remove placeholder on first message
+					if (chatPlaceholder) {
+						chatPlaceholder.remove();
+					}
+					
+					// Create new assistant message if none exists
+					if (!currentAssistantMessage) {
+						currentAssistantMessage = document.createElement('div');
+						currentAssistantMessage.className = 'assistant-message mb-3';
+						chatMessages.appendChild(currentAssistantMessage);
+					}
+					
+					// Append content
+					assistantMessageContent += message;
+					currentAssistantMessage.innerHTML = marked.parse(assistantMessageContent);
+					
+					// Scroll to bottom
+					chatMessages.scrollTop = chatMessages.scrollHeight;
+				};
+				
+				socket.onclose = function(event) {
+					console.log('WebSocket closed:', event);
+					attemptReconnect();
+				};
+				
+				socket.onerror = function(error) {
+					console.error('WebSocket error:', error);
+				};
+			}
+			
+			function attemptReconnect() {
+				if (reconnectAttempts >= maxReconnectAttempts) {
+					console.error('Max reconnect attempts reached');
+					return;
 				}
 				
-				// Create new assistant message if none exists
-				if (!currentAssistantMessage) {
-					currentAssistantMessage = document.createElement('div');
-					currentAssistantMessage.className = 'assistant-message mb-3';
-					chatMessages.appendChild(currentAssistantMessage);
-				}
+				const delay = reconnectDelayBase * Math.pow(2, reconnectAttempts);
+				reconnectAttempts++;
 				
-				// Append content
-				assistantMessageContent += message;
-				currentAssistantMessage.innerHTML = marked.parse(assistantMessageContent);
+				console.log(`Attempting reconnect in ${delay}ms (attempt ${reconnectAttempts}/${maxReconnectAttempts})`);
 				
-				// Scroll to bottom
-				chatMessages.scrollTop = chatMessages.scrollHeight;
-			};
+				setTimeout(() => {
+					console.log('Reconnecting...');
+					connectWebSocket();
+				}, delay);
+			}
 			
 			function sendMessage() {
 				const message = chatInput.value.trim();
-				if (message) {
+				if (message && socket && socket.readyState === WebSocket.OPEN) {
 					// Remove placeholder
 					if (chatPlaceholder) {
 						chatPlaceholder.remove();
@@ -118,6 +157,9 @@ templ Chat(user core.User) {
 					sendMessage();
 				}
 			});
+			
+			// Initialize WebSocket connection
+			connectWebSocket();
 			
 			// Focus input on load
 			chatInput.focus();
